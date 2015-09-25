@@ -1,10 +1,17 @@
 language: node_js
 sudo: required # to install newer g++ :(
-node_js:
-- "4.0.0"
-- "0.12"
-- "0.11"
-- "0.10"
+matrix:
+  include:
+    - node_js: "4.0.0"
+      env: SAUCE=false
+    - node_js: "0.12"
+      env: SAUCE=false
+    - node_js: "0.11"
+      env: SAUCE=false
+    - node_js: "0.10"
+      env: SAUCE=false
+    - node_js: "0.12"
+      env: SAUCE=true
 before_install:
 - npm install -g npm@'>=2.13.5'
 - |
@@ -16,13 +23,18 @@ script:
   echo "machine github.com login stellar-jenkins password $GITHUB_TOKEN" >~/.netrc
   git config --global user.name "Travis CI"
   git config --global user.email "accounts+github@stellar.org"
-  gulp test && gulp build
+  if [ "${SAUCE}" = "true" ]; then
+    gulp test:sauce
+  else
+    gulp test
+  fi
 env:
   global:
     # GITHUB_TOKEN
     - secure: Pc3DwkXywnOGAhUdBZiUCKjyljzrQzPoqm9EEr+UL2BaeaDniFLCLEkuU+ViiuJBo8oPyOIl7I+d86Mi5q06fQx55+xH7DmiW/aj4qKVB2U6Ghn6A3QWkQuvRB1o8SP7iTYRCX480ULZs6AGrMd9y1PFRx/L93fBrO+J/bOtEmg=
     - CXX=g++-4.8 # node bindings in 4.0.0
 addons:
+  sauce_connect: true
   apt:
     sources:
     - ubuntu-toolchain-r-test
@@ -32,6 +44,7 @@ addons:
 notifications:
   slack:
     secure: CgXxNEQrQ82EatyF/wSdF0P5rXcWPL+fFZ1lb1aBb8RbVt5gwddJ6xWVD/nYSr6tIJvIYHYhoYsIDPENwezIPsesG7kWXerQhydsEcA34JKxzsStd/TmU6Moxuwy6KTN7yzmL6586nSvoAw9TNPgvRkJFkH07asjGIc9Rlaq7/Y=
+before_deploy: gulp build
 deploy:
   - provider: npm
     email: npm@stellar.org

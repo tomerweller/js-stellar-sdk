@@ -87,6 +87,14 @@ gulp.task('test:browser', ["build:browser"], function (done) {
     });
 });
 
+gulp.task('test:sauce', ["test:run-server", "build:browser"], function (done) {
+  var karma = require('karma').server;
+
+  karma.start({ configFile: __dirname + '/karma-sauce.conf.js' },  function() {
+    done();
+  });
+});
+
 gulp.task('test:run-server', function(done) {
   server.listen({ path: './test/server.js' }, done);
 });
