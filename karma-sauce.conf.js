@@ -20,7 +20,7 @@ module.exports = function(config) {
 
   config.set({
     sauceLabs: {
-      testName: 'js-stellar-lib',
+      testName: 'js-stellar-sdk',
       recordScreenshots: false,
       recordVideo: false,
       tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
@@ -36,7 +36,7 @@ module.exports = function(config) {
     browsers: Object.keys(customLaunchers),
 
     files: [
-      'dist/stellar-sdk.js',
+      'dist/stellar-sdk.min.js',
       'test/setup/browser.js',
       'test/unit/**/*.js'
     ],
